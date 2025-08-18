@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Два.ч - {% block title %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --post-bg: #ffffff;
+            --border-color: #d0d0d0;
+            --text-color: #333333;
+            --link-color: #34345c;
+            --quote-color: #789922;
+            --highlight-color: #f5f5dc;
+        }
+
+        body {
+            font-family: 'PT Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        header {
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--link-color);
+            margin: 0;
+        }
+
+        .board-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .board-link {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .board-link:hover {
+            text-decoration: underline;
+        }
+
+        .post {
+            background-color: var(--post-bg);
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .post-id {
+            color: #999;
+        }
+
+        .post-image {
+            max-width: 250px;
+            max-height: 250px;
+            float: left;
+            margin-right: 15px;
+            margin-bottom: 5px;
+        }
+
+        .post-content {
+            overflow: hidden;
+        }
+
+        .quote {
+            color: var(--quote-color);
+        }
+
+        .reply-form {
+            margin-top: 20px;
+            background-color: var(--post-bg);
+            padding: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+
+        .file-input {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: var(--link-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .thread-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .replies-count {
+            color: #999;
+            font-size: 14px;
+        }
+        .post-image {
+            max-width: 150px;  /* Максимальная ширина */
+            max-height: 150px; /* Максимальная высота */
+            float: left;       /* Обтекание текстом */
+            margin: 0 10px 5px 0; /* Отступы */
+            border: 1px solid #ddd; /* Рамка */
+            transition: transform 0.2s; /* Анимация при наведении */
+        }
+
+        .post-image:hover {
+            transform: scale(1.5); /* Увеличение при наведении */
+            z-index: 100;
+            position: relative;
+        }
+
+        .post-content {
+            overflow: hidden; /* Чтобы текст правильно обтекал изображение */
+        }
+        /* Стили для поста в треде */
+        .post {
+            background-color: #fff;
+            border: 1px solid #d0d0d0;
+            margin-bottom: 15px;
+            padding: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Заголовок поста */
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #787878;
+        }
+
+        /* ID поста */
+        .post-id {
+            font-weight: bold;
+            color: #34345c;
+        }
+
+        /* Изображения в посте */
+        .post-image {
+            max-width: 150px;
+            max-height: 150px;
+            float: left;
+            margin-right: 12px;
+            margin-bottom: 5px;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .post-image:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        /* Заголовок треда */
+        .thread-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #34345c;
+            font-size: 15px;
+        }
+
+        /* Контент поста */
+        .post-content {
+            font-size: 14px;
+            line-height: 1.4;
+            color: #333;
+            overflow-wrap: break-word;
+        }
+
+        /* Счетчик ответов */
+        .replies-count {
+            clear: both;
+            font-size: 12px;
+            color: #787878;
+            margin-top: 8px;
+        }
+
+        .replies-count a {
+            color: #34345c;
+            text-decoration: none;
+        }
+
+        .replies-count a:hover {
+            text-decoration: underline;
+        }
+
+        /* Кнопка создания треда */
+        .button {
+            display: inline-block;
+            background-color: #34345c;
+            color: white;
+            padding: 8px 15px;
+            margin-bottom: 15px;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .button:hover {
+            background-color: #454575;
+        }
+
+        /* Список тредов */
+        .threads-list {
+            margin-top: 10px;
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .post-image {
+                max-width: 120px;
+                max-height: 120px;
+            }
+
+            .post {
+                padding: 10px;
+            }
+        }
+        /* Стили для контейнера треда */
+        .thread-container {
+            margin-bottom: 20px;
+        }
+
+        /* Стили для последних ответов */
+        .last-replies {
+            margin-top: 10px;
+            margin-left: 20px;
+            border-left: 3px solid #e0e0e0;
+            padding-left: 10px;
+        }
+
+        .reply-post {
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .reply-header {
+            color: #787878;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .reply-image {
+            max-width: 80px;
+            max-height: 80px;
+            float: left;
+            margin-right: 8px;
+            margin-bottom: 3px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .reply-content {
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        /* Разделитель тредов */
+        .thread-divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 15px 0;
+            clear: both;
+        }
+
+        /* Убираем разделитель после последнего треда */
+        .thread-container:last-child .thread-divider {
+            display: none;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="header-title">Ноль.ч</h1>
+            <nav class="board-list">
+                {% for board_code, board_name in config.BOARDS.items() %}
+                    <a href="{{ url_for('board', board=board_code) }}" class="board-link">/{{ board_code }}/ - {{ board_name }}</a>
+                {% endfor %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

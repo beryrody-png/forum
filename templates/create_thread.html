@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Создать тред в /{{ board }}/{% endblock %}
+
+{% block content %}
+    <h2>Создать тред в /{{ board }}/</h2>
+    
+    <form action="{{ url_for('create_thread', board=board) }}" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="title">Тема (необязательно):</label>
+            <input type="text" name="title" id="title">
+        </div>
+        
+        <textarea name="content" required placeholder="Текст поста"></textarea>
+        
+        <div class="file-input">
+            <label for="file">Изображение (необязательно):</label>
+            <input type="file" name="file" id="file">
+            <small>Макс. размер: 2MB (JPG, PNG, GIF)</small>
+        </div>
+        
+        <button type="submit">Создать тред</button>
+    </form>
+{% endblock %}

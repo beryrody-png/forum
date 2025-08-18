@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}/{{ board }}/ - {{ board_name }}{% endblock %}
+
+{% block content %}
+    <h2>/{{ board }}/ - {{ board_name }}</h2>
+
+    <a href="{{ url_for('create_thread', board=board) }}" class="button">Создать тред</a>
+
+    <div class="threads-list">
+        {% for thread in threads %}
+            <div class="thread-container">
+                <div class="post">
+                    <div class="post-header">
+                        <span class="post-id">№{{ thread.id }}</span>
+                        <span>{{ thread.created_at }}</span>
+                    </div>
+
+                    {% if thread.image %}
+                        <img src="{{ url_for('uploaded_file', filename=thread.image) }}" class="post-image" alt="">
+                    {% endif %}
+
+                    <div class="thread-title">{{ thread.title }}</div>
+                    <div class="post-content">{{ thread.content }}</div>
+                    <div class="replies-count">
+                        <a href="{{ url_for('thread', thread_id=thread.id) }}">Ответов: {{ thread.reply_count }}</a>
+                    </div>
+                </div>
+
+                {% if thread.last_replies %}
+                <div class="last-replies">
+                    {% for reply in thread.last_replies %}
+                        <div class="reply-post">
+                            <div class="reply-header">
+                                <span class="post-id">№{{ reply[0] }}</span>
+                                <span>{{ reply[4] }}</span>
+                            </div>
+                            <div class="reply-content">
+                                {% if reply[3] %}
+                                    <img src="{{ url_for('uploaded_file', filename=reply[3]) }}"
+                                         class="reply-image"
+                                         alt="">
+                                {% endif %}
+                                {{ reply[2] }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="thread-divider"></div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

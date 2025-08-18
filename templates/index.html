@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+    <h2>Добро пожаловать на Ноль.ч</h2>
+    <p>Анонимный имиджборд с открытым общением.</p>
+
+    <h3>Разделы форума:</h3>
+    <div class="board-list">
+        {% for board_code, board_name in config.BOARDS.items() %}
+            <a href="{{ url_for('board', board=board_code) }}" class="board-link">/{{ board_code }}/ - {{ board_name }}</a>
+        {% endfor %}
+    </div>
+
+    <h3>Правила:</h3>
+    <ul>
+        <li>Без регистрации</li>
+        <li>Анонимность</li>
+        <li>Соблюдайте тематику разделов</li>
+        <li>Максимальный размер файла: 2MB</li>
+        <li>Разрешённые форматы: JPG, PNG, GIF</li>
+    </ul>
+{% endblock %}
