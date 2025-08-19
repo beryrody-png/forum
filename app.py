@@ -29,42 +29,46 @@ app.config["MOD_PASSWORD_HASH"] = hashlib.sha256("admin123".encode()).hexdigest(
 
 DB_PATH = "threads.db"
 
+DB_PATH = "threads.db"
+
 def init_db():
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    # Проверяем, существует ли база, и если нет — создаём таблицы
+    db_exists = os.path.exists(DB_PATH)
     with sqlite3.connect(DB_PATH) as conn:
         c = conn.cursor()
-        # Таблица тредов
-        c.execute("""
-        CREATE TABLE IF NOT EXISTS threads (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            board TEXT,
-            title TEXT,
-            content TEXT,
-            image TEXT,
-            created_at TEXT,
-            bump_time TEXT
-        )
-        """)
-        # Таблица ответов
-        c.execute("""
-        CREATE TABLE IF NOT EXISTS replies (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            thread_id INTEGER,
-            content TEXT,
-            image TEXT,
-            created_at TEXT,
-            FOREIGN KEY(thread_id) REFERENCES threads(id)
-        )
-        """)
-        # Таблица флуд-контроля
-        c.execute("""
-        CREATE TABLE IF NOT EXISTS flood_control (
-            ip TEXT PRIMARY KEY,
-            last_post_time TEXT
-        )
-        """)
-        conn.commit()
-
+        if not db_exists:
+            c.execute("""
+            CREATE TABLE threads (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                board TEXT,
+                title TEXT,
+                content TEXT,
+                image TEXT,
+                created_at TEXT,
+                bump_time TEXT
+            )
+            """)
+            c.execute("""
+            CREATE TABLE replies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                thread_id INTEGER,
+                content TEXT,
+                image TEXT,
+                created_at TEXT,
+                FOREIGN KEY(thread_id) REFERENCES threads(id)
+            )
+            """)
+            c.execute("""
+            CREATE TABLE flood_control (
+                ip TEXT PRIMARY KEY,
+                last_post_time TEXT
+            )
+            """)
+            conn.commit()
+            print("✅ Таблицы созданы")
+        else:
+            print("ℹ️ База уже существует")
 
 
 def allowed_file(filename):
