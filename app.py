@@ -28,8 +28,12 @@ app.config["MOD_PASSWORD_HASH"] = hashlib.sha256("admin123".encode()).hexdigest(
 
 
 def init_db():
+    db_exists = os.path.exists("threads.db")
+
     with sqlite3.connect("threads.db") as conn:
         c = conn.cursor()
+
+        # Таблица тредов
         c.execute("""
         CREATE TABLE IF NOT EXISTS threads (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,6 +45,8 @@ def init_db():
             bump_time TEXT  
         )
         """)
+
+        # Таблица ответов
         c.execute("""
         CREATE TABLE IF NOT EXISTS replies (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,12 +57,25 @@ def init_db():
             FOREIGN KEY(thread_id) REFERENCES threads(id)
         )
         """)
+
+        # Таблица контроля флуда
         c.execute("""
         CREATE TABLE IF NOT EXISTS flood_control (
             ip TEXT PRIMARY KEY,
             last_post_time TEXT
         )
         """)
+
+        # Если база создаётся впервые, можно вставить тестовые данные (опционально)
+        if not db_exists:
+            for board in app.config["BOARDS"]:
+                c.execute("""
+                INSERT INTO threads (board, title, content, image, created_at, bump_time)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """, (board, f"Приветственный тред {board}", "Добро пожаловать на форум!", None,
+                      datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                      datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
         conn.commit()
 
 
