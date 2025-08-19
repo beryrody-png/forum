@@ -1,10 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Панель модератора{% endblock %}
+
+{% block content %}
+    <h2>Панель модератора</h2>
+    
+    <a href="{{ url_for('mod_logout') }}" class="button">Выйти</a>
+    
+    <h3>Последние треды (все разделы):</h3>
+    
+    <div class="threads-list">
+        {% for thread in threads %}
+            <div class="thread-container">
+                <div class="post">
+                    <div class="post-header">
+                        <span class="post-id">№{{ thread[0] }}</span>
+                        <span>/{{ thread[1] }}/</span>
+                        <span>{{ thread[5] }}</span>
+                        <form action="{{ url_for('mod_delete_thread', thread_id=thread[0]) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="mod-button">Удалить</button>
+                        </form>
+                    </div>
+                    
+                    {% if thread[4] %}
+                        <img src="{{ url_for('uploaded_file', filename=thread[4]) }}" class="post-image" alt="">
+                    {% endif %}
+                    
+                    <div class="thread-title">{{ thread[2] }}</div>
+                    <div class="post-content">{{ thread[3] }}</div>
+                    <div class="replies-count">
+                        <a href="{{ url_for('thread', thread_id=thread[0]) }}?mod=1">Управление ответами</a>
+                    </div>
+                </div>
+                <div class="thread-divider"></div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

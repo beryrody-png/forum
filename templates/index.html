@@ -13,6 +13,12 @@
         {% endfor %}
     </div>
 
+    {% if is_moderator %}
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('mod_panel') }}" class="button">Панель модератора</a>
+        </div>
+    {% endif %}
+
     <h3>Правила:</h3>
     <ul>
         <li>Без регистрации</li>
