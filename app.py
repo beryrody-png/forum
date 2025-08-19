@@ -27,12 +27,12 @@ app.config["FLOOD_LIMIT_SECONDS"] = 30  # Задержка между поста
 app.config["MOD_PASSWORD_HASH"] = hashlib.sha256("admin123".encode()).hexdigest()  # Пароль: admin123
 
 
+DB_PATH = "threads.db"
+
 def init_db():
-    db_exists = os.path.exists("threads.db")
-
-    with sqlite3.connect("threads.db") as conn:
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    with sqlite3.connect(DB_PATH) as conn:
         c = conn.cursor()
-
         # Таблица тредов
         c.execute("""
         CREATE TABLE IF NOT EXISTS threads (
@@ -42,10 +42,9 @@ def init_db():
             content TEXT,
             image TEXT,
             created_at TEXT,
-            bump_time TEXT  
+            bump_time TEXT
         )
         """)
-
         # Таблица ответов
         c.execute("""
         CREATE TABLE IF NOT EXISTS replies (
@@ -57,26 +56,15 @@ def init_db():
             FOREIGN KEY(thread_id) REFERENCES threads(id)
         )
         """)
-
-        # Таблица контроля флуда
+        # Таблица флуд-контроля
         c.execute("""
         CREATE TABLE IF NOT EXISTS flood_control (
             ip TEXT PRIMARY KEY,
             last_post_time TEXT
         )
         """)
-
-        # Если база создаётся впервые, можно вставить тестовые данные (опционально)
-        if not db_exists:
-            for board in app.config["BOARDS"]:
-                c.execute("""
-                INSERT INTO threads (board, title, content, image, created_at, bump_time)
-                VALUES (?, ?, ?, ?, ?, ?)
-                """, (board, f"Приветственный тред {board}", "Добро пожаловать на форум!", None,
-                      datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                      datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-
         conn.commit()
+
 
 
 def allowed_file(filename):
@@ -378,11 +366,6 @@ def setup_tor_hidden_service():
 
 
 if __name__ == "__main__":
-    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-    init_db()
+    init_db()  # создаём базу и таблицы
     tor_process = setup_tor_hidden_service()
-    try:
-        app.run(host='0.0.0.0', port=5000, debug=False)
-    finally:
-        if tor_process:
-            tor_process.terminate()
+    app.run(host='0.0.0.0', port=5000, debug=False)
